@@ -1,14 +1,44 @@
 import { Octokit } from '@octokit/core';
 import React, { useState, useEffect } from 'react';
 import useLocalStorage from './hooks/useLocalStorage';
-import useDebounce from './hooks/useDebounce';
+import AddRepos from './components/AddRepos';
 import './App.css';
 
 const octokit = new Octokit();
 const ACCESS_TOKEN = process.env.REACT_APP_GITHUB_PAT;
 const headers = ACCESS_TOKEN && { authorization: `token ${ACCESS_TOKEN}` };
 
-async function getReleases(owner, repo) {
+const App = () => {
+  const [syncReleases, setSyncRelease] = useState(true);
+  const [storedRepos, setStoredRepos] = useLocalStorage('repos', []);
+  const [repos, setRepos] = useState([]);
+
+  useEffect(() => {
+    if (syncReleases && storedRepos?.length) {
+      updateReleases(storedRepos, setRepos);
+    }
+    setSyncRelease(false);
+  }, [syncReleases, storedRepos]);
+
+  const handleAddRepo = async ({ id, owner, name }) => {
+    const deduped = repos.filter((r) => r.id !== id);
+    const releases = await getReleases(owner.login, name);
+    const lastRelease = releases?.data?.length ? releases.data[0] : null;
+    const newList = [...deduped, { id, owner: owner.login, name, lastRelease }];
+    setRepos(newList);
+    setStoredRepos(newList);
+  };
+
+  return (
+    <div className="App">
+      <AddRepos searchRepos={searchRepos} handleAddRepo={handleAddRepo} />
+    </div>
+  );
+};
+
+export default App;
+
+const getReleases = async (owner, repo) => {
   try {
     return await octokit.request(`GET /repos/${owner}/${repo}/releases?per_page=1`, {
       headers,
@@ -16,9 +46,9 @@ async function getReleases(owner, repo) {
   } catch (e) {
     console.log(e);
   }
-}
+};
 
-function updateReleases(repos, handleUpdate) {
+const updateReleases = (repos, handleUpdate) => {
   const updatedList = [];
   repos.forEach(async (r) => {
     try {
@@ -33,9 +63,9 @@ function updateReleases(repos, handleUpdate) {
     }
   });
   handleUpdate(updatedList);
-}
+};
 
-async function searchRepos(query, handleResults) {
+const searchRepos = async (query, handleResults) => {
   try {
     const res = await octokit.request(`GET /search/repositories?q=${query}&per_page=5`, {
       headers,
@@ -44,56 +74,4 @@ async function searchRepos(query, handleResults) {
   } catch (e) {
     console.log(e);
   }
-}
-
-function App() {
-  const [syncReleases, setSyncRelease] = useState(true);
-  const [storedRepos, setStoredRepos] = useLocalStorage('repos', []);
-  const [repos, setRepos] = useState([]);
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const debouncedQuery = useDebounce(searchQuery, 300);
-  const [searchResults, setSearchResults] = useState(null);
-
-  useEffect(() => {
-    if (syncReleases && storedRepos?.length) {
-      updateReleases(storedRepos, setRepos);
-    }
-    setSyncRelease(false);
-  }, [syncReleases, storedRepos]);
-
-  useEffect(() => {
-    if (debouncedQuery.length) {
-      searchRepos(debouncedQuery, setSearchResults);
-    }
-  }, [debouncedQuery]);
-
-  const handleAddRepo = async ({ id, owner, name }) => {
-    const deduped = repos.filter((r) => r.id !== id);
-    const releases = await getReleases(owner.login, name);
-    const lastRelease = releases?.data?.length ? releases.data[0] : null;
-    const updatedList = [...deduped, { id, owner: owner.login, name, lastRelease }];
-    setRepos(updatedList);
-    setStoredRepos(updatedList);
-  };
-
-  return (
-    <div className="App">
-      <input
-        type="text"
-        name="repo"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      <div>
-        {searchResults?.map((r) => (
-          <div key={r.id} role="button" onClick={() => handleAddRepo(r)}>
-            {r.owner.login}/{r.name}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export default App;
+};
