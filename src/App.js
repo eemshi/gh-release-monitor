@@ -1,20 +1,43 @@
 import { Octokit } from '@octokit/core';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import useLocalStorage from './hooks/useLocalStorage';
 import logo from './logo.svg';
 import './App.css';
 
 const octokit = new Octokit();
 
-octokit
-  .request('GET /repos/{owner}/{repo}/releases', {
-    owner: 'microsoft',
-    repo: 'vscode',
-  })
-  .then((response) => {
-    console.log(response);
-  });
+async function getReleases(owner, repo) {
+  try {
+    return await octokit.request('GET /repos/{owner}/{repo}/releases', { owner, repo });
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 function App() {
+  const [savedRepos, setSavedRepos] = useLocalStorage('repos', null);
+  const [repos, setRepos] = useState([]);
+
+  useEffect(() => {
+    async function getRepos() {
+      if (savedRepos?.length) {
+        const data = await savedRepos.reduce(async (ret, item) => {
+          try {
+            const res = await getReleases(item.owner, item.repo);
+            return [...ret, { ...item, latestRelease: res.data[0] }];
+          } catch (e) {
+            console.log(e);
+            return ret;
+          }
+        }, []);
+        setRepos(data);
+      }
+    }
+    getRepos();
+  }, [savedRepos]);
+
+  console.log(repos);
+
   return (
     <div className="App">
       <header className="App-header">
