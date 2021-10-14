@@ -9,14 +9,18 @@ const ACCESS_TOKEN = process.env.REACT_APP_GITHUB_PAT;
 const headers = ACCESS_TOKEN && { authorization: `token ${ACCESS_TOKEN}` };
 
 async function getReleases(owner, repo) {
+  // console.log('GET RELEASES');
   try {
-    return await octokit.request(`GET /repos/${owner}/${repo}/releases`, { headers });
+    return await octokit.request(`GET /repos/${owner}/${repo}/releases?per_page=1`, {
+      headers,
+    });
   } catch (e) {
     console.log(e);
   }
 }
 
 function updateReleases(repos, handleUpdate) {
+  // console.log('UPDATE RELEASES');
   const updatedList = [];
   repos.forEach(async (r) => {
     try {
@@ -64,8 +68,11 @@ function App() {
     }
   }, [debouncedQuery]);
 
-  const handleAddRepo = ({ owner, name }) => {
-    const updatedList = [...repos, { owner: owner.login, name }];
+  const handleAddRepo = async ({ owner, name }) => {
+    // console.log('ADD REPO');
+    const releases = await getReleases(owner.login, name);
+    const lastRelease = releases?.data?.length && releases.data[0];
+    const updatedList = [...repos, { owner: owner.login, name, lastRelease }];
     setRepos(updatedList);
     setStoredRepos(updatedList);
   };
