@@ -8,10 +8,23 @@ const octokit = new Octokit();
 
 async function getReleases(owner, repo) {
   try {
-    return await octokit.request('GET /repos/{owner}/{repo}/releases', { owner, repo });
+    return await octokit.request(`GET /repos/${owner}/${repo}/releases`);
   } catch (e) {
     console.log(e);
   }
+}
+
+async function updateRepos(repos, handleUpdate) {
+  const data = await repos.reduce(async (ret, item) => {
+    try {
+      const res = await getReleases(item.owner, item.repo);
+      return [...ret, { ...item, lastRelease: res.data[0] }];
+    } catch (e) {
+      console.log(e);
+      return ret;
+    }
+  }, []);
+  handleUpdate(data);
 }
 
 function App() {
@@ -19,21 +32,9 @@ function App() {
   const [repos, setRepos] = useState([]);
 
   useEffect(() => {
-    async function getRepos() {
-      if (savedRepos?.length) {
-        const data = await savedRepos.reduce(async (ret, item) => {
-          try {
-            const res = await getReleases(item.owner, item.repo);
-            return [...ret, { ...item, latestRelease: res.data[0] }];
-          } catch (e) {
-            console.log(e);
-            return ret;
-          }
-        }, []);
-        setRepos(data);
-      }
+    if (savedRepos?.length) {
+      updateRepos(savedRepos, setRepos);
     }
-    getRepos();
   }, [savedRepos]);
 
   console.log(repos);
