@@ -9,7 +9,6 @@ const ACCESS_TOKEN = process.env.REACT_APP_GITHUB_PAT;
 const headers = ACCESS_TOKEN && { authorization: `token ${ACCESS_TOKEN}` };
 
 async function getReleases(owner, repo) {
-  // console.log('GET RELEASES');
   try {
     return await octokit.request(`GET /repos/${owner}/${repo}/releases?per_page=1`, {
       headers,
@@ -20,13 +19,14 @@ async function getReleases(owner, repo) {
 }
 
 function updateReleases(repos, handleUpdate) {
-  // console.log('UPDATE RELEASES');
   const updatedList = [];
   repos.forEach(async (r) => {
     try {
       const res = await getReleases(r.owner, r.name);
       if (res?.data?.length) {
         updatedList.push({ ...r, lastRelease: res.data[0] });
+      } else {
+        updatedList.push(r);
       }
     } catch (e) {
       console.log(e);
@@ -37,7 +37,7 @@ function updateReleases(repos, handleUpdate) {
 
 async function searchRepos(query, handleResults) {
   try {
-    const res = await octokit.request(`GET /search/repositories?q=${query}&per_page=10`, {
+    const res = await octokit.request(`GET /search/repositories?q=${query}&per_page=5`, {
       headers,
     });
     handleResults(res.data.items);
@@ -52,7 +52,7 @@ function App() {
   const [repos, setRepos] = useState([]);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const debouncedQuery = useDebounce(searchQuery, 500);
+  const debouncedQuery = useDebounce(searchQuery, 300);
   const [searchResults, setSearchResults] = useState(null);
 
   useEffect(() => {
@@ -68,11 +68,11 @@ function App() {
     }
   }, [debouncedQuery]);
 
-  const handleAddRepo = async ({ owner, name }) => {
-    // console.log('ADD REPO');
+  const handleAddRepo = async ({ id, owner, name }) => {
+    const deduped = repos.filter((r) => r.id !== id);
     const releases = await getReleases(owner.login, name);
-    const lastRelease = releases?.data?.length && releases.data[0];
-    const updatedList = [...repos, { owner: owner.login, name, lastRelease }];
+    const lastRelease = releases?.data?.length ? releases.data[0] : null;
+    const updatedList = [...deduped, { id, owner: owner.login, name, lastRelease }];
     setRepos(updatedList);
     setStoredRepos(updatedList);
   };
