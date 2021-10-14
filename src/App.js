@@ -1,7 +1,7 @@
 import { Octokit } from '@octokit/core';
 import React, { useState, useEffect } from 'react';
 import useLocalStorage from './hooks/useLocalStorage';
-import logo from './logo.svg';
+import useDebounce from './hooks/useDebounce';
 import './App.css';
 
 const octokit = new Octokit();
@@ -14,47 +14,73 @@ async function getReleases(owner, repo) {
   }
 }
 
-async function updateRepos(repos, handleUpdate) {
-  const data = await repos.reduce(async (ret, item) => {
+function updateReleases(repos, handleUpdate) {
+  const updatedList = [];
+  repos.forEach(async (r) => {
     try {
-      const res = await getReleases(item.owner, item.repo);
-      return [...ret, { ...item, lastRelease: res.data[0] }];
+      const res = await getReleases(r.owner, r.name);
+      if (res?.data?.length) {
+        updatedList.push({ ...r, lastRelease: res.data[0] });
+      }
     } catch (e) {
       console.log(e);
-      return ret;
     }
-  }, []);
-  handleUpdate(data);
+  });
+  handleUpdate(updatedList);
+}
+
+async function searchRepos(query, handleResults) {
+  try {
+    const res = await octokit.request(`GET /search/repositories?q=${query}&per_page=10`);
+    handleResults(res.data.items);
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 function App() {
-  const [savedRepos, setSavedRepos] = useLocalStorage('repos', null);
+  const [syncReleases, setSyncRelease] = useState(true);
+  const [storedRepos, setStoredRepos] = useLocalStorage('repos', []);
   const [repos, setRepos] = useState([]);
 
-  useEffect(() => {
-    if (savedRepos?.length) {
-      updateRepos(savedRepos, setRepos);
-    }
-  }, [savedRepos]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedQuery = useDebounce(searchQuery, 500);
+  const [searchResults, setSearchResults] = useState(null);
 
-  console.log(repos);
+  useEffect(() => {
+    if (syncReleases && storedRepos?.length) {
+      updateReleases(storedRepos, setRepos);
+    }
+    setSyncRelease(false);
+  }, [syncReleases, storedRepos]);
+
+  useEffect(() => {
+    if (debouncedQuery.length) {
+      searchRepos(debouncedQuery, setSearchResults);
+    }
+  }, [debouncedQuery]);
+
+  const handleAddRepo = ({ owner, name }) => {
+    const updatedList = [...repos, { owner: owner.login, name }];
+    setRepos(updatedList);
+    setStoredRepos(updatedList);
+  };
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input
+        type="text"
+        name="repo"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      <div>
+        {searchResults?.map((r) => (
+          <div key={r.id} role="button" onClick={() => handleAddRepo(r)}>
+            {r.owner.login}/{r.name}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
