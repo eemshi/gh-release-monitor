@@ -1,21 +1,20 @@
-import { Octokit } from "@octokit/core";
+import { Octokit } from '@octokit/core';
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
 const octokit = new Octokit();
 
-octokit.request('GET /repos/{owner}/{repo}/releases', {
-  owner: 'microsoft',
-  repo: 'vscode'
-}).then(
-  (response) => {
+octokit
+  .request('GET /repos/{owner}/{repo}/releases', {
+    owner: 'microsoft',
+    repo: 'vscode',
+  })
+  .then((response) => {
     console.log(response);
-  }
-);
+  });
 
 function App() {
-
   return (
     <div className="App">
       <header className="App-header">
