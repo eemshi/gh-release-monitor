@@ -9,6 +9,12 @@ function SearchRepos({ onSelect }) {
   const [results, setResults] = useState(null);
 
   useEffect(() => {
+    if (!query) {
+      setResults([]);
+    }
+  }, [query]);
+
+  useEffect(() => {
     const searchRepos = async (q) => {
       try {
         const res = await octokit.request(`GET /search/repositories?q=${q}&per_page=5`);
@@ -24,13 +30,15 @@ function SearchRepos({ onSelect }) {
 
   const handleSelect = (repo) => {
     onSelect(repo);
-    setResults([]);
     setQuery('');
   };
 
   return (
     <div>
       <input type="text" name="repo" value={query} onChange={(e) => setQuery(e.target.value)} />
+      <div role="button" onClick={() => setQuery('')}>
+        X
+      </div>
       {results?.map((r) => (
         <div key={r.id} role="button" onClick={() => handleSelect(r)}>
           {r.owner.login}/{r.name}
