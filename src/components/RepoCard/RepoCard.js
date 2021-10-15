@@ -17,7 +17,9 @@ const RepoCard = ({ repo, onSelect, onDelete }) => {
   };
 
   let cardClasses = 'repo-card';
-  if (repo.lastRelease && !repo.read) {
+  if (!repo.lastRelease) {
+    cardClasses += ' disabled';
+  } else if (!repo.read) {
     cardClasses += ' unread';
   }
 

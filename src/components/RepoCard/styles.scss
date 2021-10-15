@@ -1,7 +1,8 @@
-$blue: #B0E0E6;
-$lightgreen: #D9FEE5;
-$green: #00C700;
-$darkgreen: #006A00;
+$gray: #ccc;
+$blue: #8dcfd8;
+$lightgreen: #d9fee5;
+$green: #00c700;
+$darkgreen: #006a00;
 
 .repo-card {
   display: flex;
@@ -12,6 +13,10 @@ $darkgreen: #006A00;
 
   &.unread {
     border-color: $green;
+  }
+
+  &.disabled {
+    border-color: $gray;
   }
 
   .name {
