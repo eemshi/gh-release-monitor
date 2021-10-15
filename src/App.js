@@ -15,13 +15,13 @@ const App = () => {
 
   useEffect(() => {
     const syncRepos = async () => {
-      const updatedRepos = await getNewReleases(storedRepos);
+      const updatedRepos = await updateReleases(storedRepos);
       setRepos(updatedRepos);
     };
-    if (syncing && storedRepos?.length) {
+    if (syncing) {
       syncRepos();
+      setSyncing(false);
     }
-    setSyncing(false);
   }, [storedRepos, syncing]);
 
   const handleAddRepo = async ({ id, owner, name }) => {
@@ -43,6 +43,7 @@ const App = () => {
     <div className="App">
       <AddRepos searchRepos={searchRepos} handleAddRepo={handleAddRepo} />
       <div>---</div>
+      <button onClick={() => setSyncing(true)}>SYNC ALL</button>
       <div>
         {!!repos.length &&
           repos.map((r) => (
@@ -70,7 +71,10 @@ const getReleases = async (owner, repo) => {
   }
 };
 
-const getNewReleases = (repos) => {
+const updateReleases = (repos) => {
+  if (!repos?.length) {
+    return [];
+  }
   return repos.map((r) => {
     try {
       const res = getReleases(r.owner, r.name);
