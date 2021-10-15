@@ -3,15 +3,31 @@ import '../App.css';
 
 const RepoCard = ({ repo, onSelect, onDelete }) => {
   const { id, owner, name, lastRelease } = repo;
+
+  const handleSelect = () => {
+    if (lastRelease) {
+      onSelect(repo);
+    }
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    onDelete(id);
+  };
+
   return (
-    <div onClick={() => onSelect(repo)}>
+    <div onClick={handleSelect}>
       <div>
         {owner}/{name}
       </div>
-      <div>
-        {lastRelease.tag_name} {lastRelease.created_at}
-      </div>
-      <div onClick={() => onDelete(id)}>X</div>
+      {lastRelease ? (
+        <div>
+          {lastRelease.tag_name} {lastRelease.created_at}
+        </div>
+      ) : (
+        'No releases yet'
+      )}
+      <div onClick={handleDelete}>X</div>
     </div>
   );
 };

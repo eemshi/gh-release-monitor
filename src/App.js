@@ -36,13 +36,14 @@ const App = () => {
     const newList = repos.filter((r) => r.id !== id);
     setRepos(newList);
     setStoredRepos(newList);
-    setFocused(null);
+    if (id === focused?.id) {
+      setFocused(null);
+    }
   };
 
   return (
     <div className="App">
       <RepoSearch onSelect={handleSaveRepo} />
-      <div>---</div>
       <button onClick={() => setSyncing(true)}>SYNC ALL</button>
       {repos.map((repo) => (
         <RepoCard key={repo.id} repo={repo} onSelect={setFocused} onDelete={handleDeleteRepo} />
