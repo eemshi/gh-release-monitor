@@ -1,5 +1,6 @@
 import React from 'react';
 import { getFormattedDate } from '../../utils';
+import closeIcon from '../../icons/close.svg';
 import './styles.scss';
 
 const RepoCard = ({ repo, onSelect, onDelete }) => {
@@ -45,8 +46,8 @@ const RepoCard = ({ repo, onSelect, onDelete }) => {
           <small>No releases yet</small>
         )}
       </div>
-      <div onClick={handleDelete} className="delete-btn">
-        X
+      <div role="button" onClick={handleDelete} className="delete-btn">
+        <img src={closeIcon} width={20} />
       </div>
     </div>
   );

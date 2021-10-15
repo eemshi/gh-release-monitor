@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import useDebounce from '../../hooks/useDebounce';
 import { octokit } from '../../utils';
+import closeIcon from '../../icons/close.svg';
+import searchIcon from '../../icons/search.svg';
 import './styles.scss';
 
 function RepoSearch({ onSelect }) {
@@ -36,10 +38,17 @@ function RepoSearch({ onSelect }) {
   return (
     <div className="search-container">
       <div className="search-bar">
-        <input type="text" name="repo" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <img src={searchIcon} width={18} />
+        <input
+          type="text"
+          name="repo"
+          placeholder="Add repo"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
         {!!query.length && (
           <div role="button" onClick={() => setQuery('')} className="reset-btn">
-            X
+            <img src={closeIcon} width={20} />
           </div>
         )}
       </div>
@@ -48,7 +57,12 @@ function RepoSearch({ onSelect }) {
         <div className="dropdown-container">
           <div className="dropdown">
             {results.map((r) => (
-              <div key={r.id} role="button" onClick={() => handleSelect(r)} className="item">
+              <div
+                key={r.id}
+                role="button"
+                onClick={() => handleSelect(r)}
+                className="item"
+              >
                 {r.owner.login}/{r.name}
               </div>
             ))}

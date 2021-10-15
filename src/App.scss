@@ -1,9 +1,26 @@
+$blue: #8dcfd8;
+
 .App {
   padding: 1em;
 }
 
 small {
   font-size: 0.75em;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  
+  h1 {
+    margin: 0;
+  }
+}
+
+.sync-icon-container {
+  text-align: center;
+  margin-left: 10px;
 }
 
 .release-notes {

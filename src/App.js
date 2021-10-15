@@ -4,6 +4,7 @@ import RepoCard from './components/RepoCard/RepoCard';
 import RepoSearch from './components/RepoSearch/RepoSearch';
 import useLocalStorage from './hooks/useLocalStorage';
 import { octokit } from './utils';
+import syncIcon from './icons/sync.svg';
 import './App.scss';
 
 const App = () => {
@@ -54,15 +55,31 @@ const App = () => {
 
   return (
     <div className="App">
-      <h1>GH Release Monitor</h1>
+      <header>
+        <h1>GH Release Monitor</h1>
+        <div
+          role="button"
+          onClick={() => setSyncing(true)}
+          className="sync-icon-container"
+        >
+          <img src={syncIcon} width={20} />
+        </div>
+      </header>
       <RepoSearch onSelect={handleSaveRepo} />
-      <button onClick={() => setSyncing(true)}>SYNC ALL</button>
+      <h2>Tracking</h2>
       {repos.map((repo) => (
-        <RepoCard key={repo.id} repo={repo} onSelect={setFocused} onDelete={handleDeleteRepo} />
+        <RepoCard
+          key={repo.id}
+          repo={repo}
+          onSelect={setFocused}
+          onDelete={handleDeleteRepo}
+        />
       ))}
       {focused && (
         <div className="release-notes">
-          <div onClick={toggleRead}>{focused.read ? 'Mark unread' : 'Mark read'}</div>
+          <div role="button" onClick={toggleRead}>
+            {focused.read ? 'Mark unread' : 'Mark read'}
+          </div>
           <div>
             {focused.owner}/{focused.name} {focused.lastRelease.tag_name}
           </div>

@@ -1,5 +1,6 @@
 .search-container {
   position: relative;
+  margin-bottom: 20px;
 
   .dropdown-container {
     position: absolute;
@@ -9,22 +10,24 @@
   .dropdown {
     border: 1px solid black;
     border-top: 0;
-    background-color: white; 
+    background-color: white;
+    padding: 6px 0;
     .item {
-      padding: 7px;
+      padding: 12px;
     }
   }
 
   .search-bar {
     display: flex;
     align-items: center;
-    border: 1px solid black;
+    border: 0;
+    border-bottom: 1px solid black;
 
     input {
       flex: 1;
       border: 0;
-      padding: 7px;
-      font-size: 1em;
+      padding: 5px;
+      font-size: 1.2em;
     }
 
     .reset-btn {
