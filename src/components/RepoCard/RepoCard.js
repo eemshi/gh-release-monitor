@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { getFormattedDate } from '../../utils';
 import closeIcon from '../../icons/close.svg';
+import deleteIcon from '../../icons/delete.svg';
 import './styles.scss';
 
 const RepoCard = ({ repo, onDelete, toggleRead }) => {
@@ -64,7 +65,7 @@ const Collapsed = ({ repo, handleDelete }) => {
           )}
         </div>
         <div role="button" onClick={handleDelete} className="delete-btn">
-          <img src={closeIcon} width={20} alt="Close" />
+          <img src={deleteIcon} width={20} alt="Delete" />
         </div>
         {lastRelease && read && <small className="unread">Read ✓</small>}
       </div>
@@ -96,7 +97,7 @@ const Expanded = ({ repo, onToggleRead }) => {
         {repo.read ? 'Mark unread' : 'Mark read'}
       </div>
       <div>
-        <a href={repo.url} onClick={(e) => e.stopPropagation()}>
+        <a href={repo.url} onClick={(e) => e.stopPropagation()} className="name">
           {repo.owner}/{repo.name}
         </a>
       </div>
