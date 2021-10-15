@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import RepoCard from './components/RepoCard';
-import RepoSearch from './components/RepoSearch';
+import RepoCard from './components/RepoCard/RepoCard';
+import RepoSearch from './components/RepoSearch/RepoSearch';
 import useLocalStorage from './hooks/useLocalStorage';
 import { octokit } from './utils';
-import './App.css';
+import './App.scss';
 
 const App = () => {
   const [syncing, setSyncing] = useState(true);
@@ -43,6 +43,7 @@ const App = () => {
 
   return (
     <div className="App">
+      <h1>GH Release Monitor</h1>
       <RepoSearch onSelect={handleSaveRepo} />
       <button onClick={() => setSyncing(true)}>SYNC ALL</button>
       {repos.map((repo) => (

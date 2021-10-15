@@ -1,5 +1,5 @@
 import React from 'react';
-import '../App.css';
+import './styles.scss';
 
 const RepoCard = ({ repo, onSelect, onDelete }) => {
   const { id, owner, name, lastRelease } = repo;

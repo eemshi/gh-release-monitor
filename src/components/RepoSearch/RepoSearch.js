@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import useDebounce from '../hooks/useDebounce';
-import { octokit } from '../utils';
-import '../App.css';
+import useDebounce from '../../hooks/useDebounce';
+import { octokit } from '../../utils';
+import './styles.scss';
 
 function SearchRepos({ onSelect }) {
   const [query, setQuery] = useState('');
@@ -34,10 +34,12 @@ function SearchRepos({ onSelect }) {
   };
 
   return (
-    <div>
-      <input type="text" name="repo" value={query} onChange={(e) => setQuery(e.target.value)} />
-      <div role="button" onClick={() => setQuery('')}>
-        X
+    <div className="">
+      <div className="search-bar">
+        <input type="text" name="repo" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <div role="button" onClick={() => setQuery('')} className="reset-btn">
+          X
+        </div>
       </div>
       {results?.map((r) => (
         <div key={r.id} role="button" onClick={() => handleSelect(r)}>
