@@ -1,17 +1,16 @@
-import { Octokit } from '@octokit/core';
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import RepoCard from './components/RepoCard';
+import RepoSearch from './components/RepoSearch';
 import useLocalStorage from './hooks/useLocalStorage';
-import AddRepos from './components/AddRepos';
+import { octokit } from './utils';
 import './App.css';
-
-const octokit = new Octokit();
-const ACCESS_TOKEN = process.env.REACT_APP_GITHUB_PAT;
-const headers = ACCESS_TOKEN && { authorization: `token ${ACCESS_TOKEN}` };
 
 const App = () => {
   const [syncing, setSyncing] = useState(true);
   const [storedRepos, setStoredRepos] = useLocalStorage('repos', []);
   const [repos, setRepos] = useState([]);
+  const [focused, setFocused] = useState(null);
 
   useEffect(() => {
     const syncRepos = async () => {
@@ -24,7 +23,7 @@ const App = () => {
     }
   }, [storedRepos, syncing]);
 
-  const handleAddRepo = async ({ id, owner, name }) => {
+  const handleSaveRepo = async ({ id, owner, name }) => {
     const deduped = repos.filter((r) => r.id !== id);
     const releases = await getReleases(owner.login, name);
     const lastRelease = releases?.data?.length ? releases.data[0] : null;
@@ -37,24 +36,28 @@ const App = () => {
     const newList = repos.filter((r) => r.id !== id);
     setRepos(newList);
     setStoredRepos(newList);
+    setFocused(null);
   };
 
   return (
     <div className="App">
-      <AddRepos searchRepos={searchRepos} handleAddRepo={handleAddRepo} />
+      <RepoSearch onSelect={handleSaveRepo} />
       <div>---</div>
       <button onClick={() => setSyncing(true)}>SYNC ALL</button>
-      <div>
-        {!!repos.length &&
-          repos.map((r) => (
-            <div key={r.id}>
-              <div>
-                {r.owner}/{r.name}
-              </div>
-              <div onClick={() => handleDeleteRepo(r.id)}>X</div>
-            </div>
-          ))}
-      </div>
+      {repos.map((repo) => (
+        <RepoCard key={repo.id} repo={repo} onSelect={setFocused} onDelete={handleDeleteRepo} />
+      ))}
+      {focused && (
+        <div>
+          <div>
+            {focused.owner}/{focused.name} {focused.lastRelease.tag_name}
+          </div>
+          <div>{focused.lastRelease.created_at}</div>
+          <div>
+            <ReactMarkdown>{focused.lastRelease.body}</ReactMarkdown>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -63,9 +66,7 @@ export default App;
 
 const getReleases = async (owner, repo) => {
   try {
-    return await octokit.request(`GET /repos/${owner}/${repo}/releases?per_page=1`, {
-      headers,
-    });
+    return await octokit.request(`GET /repos/${owner}/${repo}/releases?per_page=1`);
   } catch (e) {
     console.log(e);
   }
@@ -86,15 +87,4 @@ const updateReleases = (repos) => {
       return r;
     }
   });
-};
-
-const searchRepos = async (query, handleResults) => {
-  try {
-    const res = await octokit.request(`GET /search/repositories?q=${query}&per_page=5`, {
-      headers,
-    });
-    handleResults(res.data.items);
-  } catch (e) {
-    console.log(e);
-  }
 };
