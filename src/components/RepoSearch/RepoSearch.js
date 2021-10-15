@@ -3,13 +3,13 @@ import useDebounce from '../../hooks/useDebounce';
 import { octokit } from '../../utils';
 import './styles.scss';
 
-function SearchRepos({ onSelect }) {
+function RepoSearch({ onSelect }) {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 300);
   const [results, setResults] = useState(null);
 
   useEffect(() => {
-    if (!query) {
+    if (!query.length) {
       setResults([]);
     }
   }, [query]);
@@ -34,20 +34,29 @@ function SearchRepos({ onSelect }) {
   };
 
   return (
-    <div className="">
+    <div className="search-container">
       <div className="search-bar">
         <input type="text" name="repo" value={query} onChange={(e) => setQuery(e.target.value)} />
-        <div role="button" onClick={() => setQuery('')} className="reset-btn">
-          X
-        </div>
+        {!!query.length && (
+          <div role="button" onClick={() => setQuery('')} className="reset-btn">
+            X
+          </div>
+        )}
       </div>
-      {results?.map((r) => (
-        <div key={r.id} role="button" onClick={() => handleSelect(r)}>
-          {r.owner.login}/{r.name}
+
+      {!!results?.length && (
+        <div className="dropdown-container">
+          <div className="dropdown">
+            {results.map((r) => (
+              <div key={r.id} role="button" onClick={() => handleSelect(r)} className="item">
+                {r.owner.login}/{r.name}
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
+      )}
     </div>
   );
 }
 
-export default SearchRepos;
+export default RepoSearch;
