@@ -3,7 +3,7 @@ import { getFormattedDate } from '../../utils';
 import './styles.scss';
 
 const RepoCard = ({ repo, onSelect, onDelete }) => {
-  const { id, owner, name, lastRelease } = repo;
+  const { id, owner, name, lastRelease, isNew } = repo;
 
   const handleSelect = () => {
     if (lastRelease) {
@@ -28,7 +28,7 @@ const RepoCard = ({ repo, onSelect, onDelete }) => {
           <>
             <div className="tag-container">
               <div className="tag">{lastRelease.tag_name}</div>
-              <div className="label">New!</div>
+              {isNew && <div className="label">New!</div>}
             </div>
             <div>
               <small>{getFormattedDate(lastRelease.created_at)}</small>

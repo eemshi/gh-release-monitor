@@ -83,7 +83,9 @@ const updateReleases = (repos) => {
     try {
       const res = getReleases(r.owner, r.name);
       if (res?.data?.length) {
-        return { ...r, lastRelease: res.data[0] };
+        const lastRelease = res.data[0];
+        const isNew = lastRelease.created_at !== r.lastRelease.created_at;
+        return { ...r, lastRelease, isNew };
       }
       return r;
     } catch (e) {
