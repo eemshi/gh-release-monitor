@@ -62,33 +62,38 @@ const App = () => {
           onClick={() => setSyncing(true)}
           className="sync-icon-container"
         >
-          <img src={syncIcon} width={20} />
+          <img src={syncIcon} width={20} alt="Sync" />
         </div>
       </header>
-      <RepoSearch onSelect={handleSaveRepo} />
-      <h2>Tracking</h2>
-      {repos.map((repo) => (
-        <RepoCard
-          key={repo.id}
-          repo={repo}
-          onSelect={setFocused}
-          onDelete={handleDeleteRepo}
-        />
-      ))}
-      {focused && (
-        <div className="release-notes">
-          <div role="button" onClick={toggleRead}>
-            {focused.read ? 'Mark unread' : 'Mark read'}
-          </div>
-          <div>
-            {focused.owner}/{focused.name} {focused.lastRelease.tag_name}
-          </div>
-          <div>{focused.lastRelease.created_at}</div>
-          <div>
-            <ReactMarkdown>{focused.lastRelease.body}</ReactMarkdown>
-          </div>
+      <main>
+        <div className="repos-column">
+          <RepoSearch onSelect={handleSaveRepo} />
+          <h2>Tracking</h2>
+          {repos.map((repo) => (
+            <RepoCard
+              key={repo.id}
+              repo={repo}
+              focused={focused?.id === repo.id}
+              onSelect={setFocused}
+              onDelete={handleDeleteRepo}
+            />
+          ))}
         </div>
-      )}
+        {focused && (
+          <div className="release-notes">
+            <div role="button" onClick={toggleRead}>
+              {focused.read ? 'Mark unread' : 'Mark read'}
+            </div>
+            <div>
+              {focused.owner}/{focused.name} {focused.lastRelease.tag_name}
+            </div>
+            <div>{focused.lastRelease.created_at}</div>
+            <div>
+              <ReactMarkdown>{focused.lastRelease.body}</ReactMarkdown>
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 };

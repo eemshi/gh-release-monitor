@@ -8,6 +8,10 @@ small {
   font-size: 0.75em;
 }
 
+div[role="button"] {
+  cursor: pointer;
+}
+
 header {
   display: flex;
   align-items: center;
@@ -18,11 +22,27 @@ header {
   }
 }
 
+main {
+  @media screen and (min-width: 800px) {
+    display: flex;
+  }
+
+  .repos-column {
+    @media screen and (min-width: 800px) {
+      width: 396px;
+    }
+  }
+
+  .release-notes {
+    word-break: break-word;
+    @media screen and (min-width: 800px) {
+      flex: 1;
+      margin-left: 20px;
+    }
+  }
+}
+
 .sync-icon-container {
   text-align: center;
   margin-left: 10px;
-}
-
-.release-notes {
-  word-break: break-word;
 }

@@ -3,8 +3,8 @@ import { getFormattedDate } from '../../utils';
 import closeIcon from '../../icons/close.svg';
 import './styles.scss';
 
-const RepoCard = ({ repo, onSelect, onDelete }) => {
-  const { id, owner, name, lastRelease, isNew } = repo;
+const RepoCard = ({ repo, focused, onSelect, onDelete }) => {
+  const { id, owner, name, lastRelease, isNew, read } = repo;
 
   const handleSelect = () => {
     if (lastRelease) {
@@ -20,12 +20,12 @@ const RepoCard = ({ repo, onSelect, onDelete }) => {
   let cardClasses = 'repo-card';
   if (!repo.lastRelease) {
     cardClasses += ' disabled';
-  } else if (!repo.read) {
-    cardClasses += ' unread';
+  } else if (focused) {
+    cardClasses += ' focused';
   }
 
   return (
-    <div onClick={handleSelect} className={cardClasses}>
+    <div role="button" onClick={handleSelect} className={cardClasses}>
       <div style={{ flex: 1 }}>
         <span className="name">{name}</span>
         <br />
@@ -36,7 +36,7 @@ const RepoCard = ({ repo, onSelect, onDelete }) => {
           <>
             <div className="tag-container">
               <div className="tag">{lastRelease.tag_name}</div>
-              {isNew && <div className="label">New!</div>}
+              {isNew && !read && <div className="label">New!</div>}
             </div>
             <div>
               <small>{getFormattedDate(lastRelease.created_at)}</small>
@@ -47,8 +47,9 @@ const RepoCard = ({ repo, onSelect, onDelete }) => {
         )}
       </div>
       <div role="button" onClick={handleDelete} className="delete-btn">
-        <img src={closeIcon} width={20} />
+        <img src={closeIcon} width={20} alt="Close" />
       </div>
+      {lastRelease && read && <small className="unread">Read ✓</small>}
     </div>
   );
 };

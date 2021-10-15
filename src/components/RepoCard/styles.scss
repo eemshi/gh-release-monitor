@@ -1,17 +1,19 @@
 $gray: #ccc;
+$darkgray: #888;
 $blue: #8dcfd8;
 $lightgreen: #d9fee5;
 $green: #00c700;
 $darkgreen: #006a00;
 
 .repo-card {
+  position: relative;
   display: flex;
   margin-bottom: 15px;
   padding: 10px;
   border: 2px solid $blue;
   border-radius: 7px;
 
-  &.unread {
+  &.focused {
     border-color: $green;
   }
 
@@ -27,7 +29,7 @@ $darkgreen: #006a00;
   .release-info {
     flex: 1;
     align-self: center;
-    padding-left: 10px;
+    padding-left: 15px;
 
     .tag-container {
       display: flex;
@@ -51,5 +53,12 @@ $darkgreen: #006a00;
   .delete-btn {
     align-self: flex-start;
     margin-left: 7px;
+  }
+
+  .unread {
+    position: absolute;
+    bottom: 7px;
+    right: 7px;
+    color: $darkgray;
   }
 }

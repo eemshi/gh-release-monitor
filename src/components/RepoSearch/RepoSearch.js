@@ -38,7 +38,7 @@ function RepoSearch({ onSelect }) {
   return (
     <div className="search-container">
       <div className="search-bar">
-        <img src={searchIcon} width={18} />
+        <img src={searchIcon} width={18} alt="Search" />
         <input
           type="text"
           name="repo"
@@ -48,7 +48,7 @@ function RepoSearch({ onSelect }) {
         />
         {!!query.length && (
           <div role="button" onClick={() => setQuery('')} className="reset-btn">
-            <img src={closeIcon} width={20} />
+            <img src={closeIcon} width={20} alt="Close" />
           </div>
         )}
       </div>
