@@ -18,6 +18,7 @@ const App = () => {
       setRepos(updatedRepos);
     };
     if (syncing) {
+      setFocused(null);
       syncRepos();
       setSyncing(false);
     }
@@ -50,7 +51,7 @@ const App = () => {
         <RepoCard key={repo.id} repo={repo} onSelect={setFocused} onDelete={handleDeleteRepo} />
       ))}
       {focused && (
-        <div>
+        <div className="release-notes">
           <div>
             {focused.owner}/{focused.name} {focused.lastRelease.tag_name}
           </div>

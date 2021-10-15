@@ -16,18 +16,26 @@ const RepoCard = ({ repo, onSelect, onDelete }) => {
   };
 
   return (
-    <div onClick={handleSelect}>
-      <div>
-        {owner}/{name}
+    <div onClick={handleSelect} className="repo-card">
+      <div style={{ flex: 1 }}>
+        <span className="name">{name}</span>
+        <br />
+        <small>{owner}</small>
       </div>
-      {lastRelease ? (
-        <div>
-          {lastRelease.tag_name} {lastRelease.created_at}
-        </div>
-      ) : (
-        'No releases yet'
-      )}
-      <div onClick={handleDelete}>X</div>
+      <div className="release">
+        {lastRelease ? (
+          <div>
+            <span className="tag">{lastRelease.tag_name}</span>
+            <br />
+            <small>{lastRelease.created_at}</small>
+          </div>
+        ) : (
+          <small>No releases</small>
+        )}
+      </div>
+      <div onClick={handleDelete} className="delete-btn">
+        X
+      </div>
     </div>
   );
 };
