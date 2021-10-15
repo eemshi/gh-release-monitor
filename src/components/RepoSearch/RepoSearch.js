@@ -8,7 +8,7 @@ import './styles.scss';
 function RepoSearch({ onSelect }) {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 300);
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState([]);
 
   useEffect(() => {
     if (!query.length) {
@@ -31,6 +31,7 @@ function RepoSearch({ onSelect }) {
   }, [debouncedQuery]);
 
   const handleSelect = (repo) => {
+    console.log(repo);
     onSelect(repo);
     setQuery('');
   };
@@ -53,7 +54,7 @@ function RepoSearch({ onSelect }) {
         )}
       </div>
 
-      {!!results?.length && (
+      {!!results.length && (
         <div className="dropdown-container">
           <div className="dropdown">
             {results.map((r) => (

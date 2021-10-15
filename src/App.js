@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import RepoCard from './components/RepoCard/RepoCard';
 import RepoSearch from './components/RepoSearch/RepoSearch';
 import useLocalStorage from './hooks/useLocalStorage';
-import { octokit } from './utils';
+import { octokit, getFormattedDate } from './utils';
 import syncIcon from './icons/sync.svg';
 import './App.scss';
 
@@ -32,10 +32,10 @@ const App = () => {
     setStoredRepos(newList);
   };
 
-  const handleSaveRepo = async ({ id, owner, name }) => {
+  const handleSaveRepo = async ({ id, owner, name, html_url }) => {
     const releases = await getReleases(owner.login, name);
     const lastRelease = releases?.data?.length ? releases.data[0] : null;
-    updateRepo({ id, owner: owner.login, name, lastRelease });
+    updateRepo({ id, owner: owner.login, name, lastRelease, url: html_url });
   };
 
   const handleDeleteRepo = (id) => {
@@ -85,9 +85,12 @@ const App = () => {
               {focused.read ? 'Mark unread' : 'Mark read'}
             </div>
             <div>
-              {focused.owner}/{focused.name} {focused.lastRelease.tag_name}
+              <a href={focused.url}>
+                {focused.owner}/{focused.name}
+              </a>{' '}
+              <a href={focused.lastRelease.html_url}>{focused.lastRelease.tag_name}</a>
             </div>
-            <div>{focused.lastRelease.created_at}</div>
+            <div>{getFormattedDate(focused.lastRelease.created_at)}</div>
             <div>
               <ReactMarkdown>{focused.lastRelease.body}</ReactMarkdown>
             </div>
