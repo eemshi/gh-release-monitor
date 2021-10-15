@@ -24,13 +24,17 @@ const App = () => {
     }
   }, [storedRepos, syncing]);
 
-  const handleSaveRepo = async ({ id, owner, name }) => {
-    const deduped = repos.filter((r) => r.id !== id);
-    const releases = await getReleases(owner.login, name);
-    const lastRelease = releases?.data?.length ? releases.data[0] : null;
-    const newList = [...deduped, { id, owner: owner.login, name, lastRelease }];
+  const updateRepo = (updatedRepo) => {
+    const deduped = repos.filter((r) => r.id !== updatedRepo.id);
+    const newList = [...deduped, updatedRepo];
     setRepos(newList);
     setStoredRepos(newList);
+  };
+
+  const handleSaveRepo = async ({ id, owner, name }) => {
+    const releases = await getReleases(owner.login, name);
+    const lastRelease = releases?.data?.length ? releases.data[0] : null;
+    updateRepo({ id, owner: owner.login, name, lastRelease });
   };
 
   const handleDeleteRepo = (id) => {
@@ -40,6 +44,12 @@ const App = () => {
     if (id === focused?.id) {
       setFocused(null);
     }
+  };
+
+  const toggleRead = () => {
+    const readUpdated = { ...focused, read: !focused.read };
+    updateRepo(readUpdated);
+    setFocused(readUpdated);
   };
 
   return (
@@ -52,6 +62,7 @@ const App = () => {
       ))}
       {focused && (
         <div className="release-notes">
+          <div onClick={toggleRead}>{focused.read ? 'Mark unread' : 'Mark read'}</div>
           <div>
             {focused.owner}/{focused.name} {focused.lastRelease.tag_name}
           </div>

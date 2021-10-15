@@ -1,6 +1,7 @@
 $blue: #B0E0E6;
 $lightgreen: #D9FEE5;
-$green: #006A00;
+$green: #00C700;
+$darkgreen: #006A00;
 
 .repo-card {
   display: flex;
@@ -8,6 +9,10 @@ $green: #006A00;
   padding: 10px;
   border: 2px solid $blue;
   border-radius: 7px;
+
+  &.unread {
+    border-color: $green;
+  }
 
   .name {
     margin-bottom: 5px;
@@ -33,7 +38,7 @@ $green: #006A00;
       padding: 2px 4px;
       border-radius: 5px;
       background-color: $lightgreen;
-      color: $green;
+      color: $darkgreen;
       font-size: 0.7em;
     }
   }

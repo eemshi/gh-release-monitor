@@ -16,8 +16,13 @@ const RepoCard = ({ repo, onSelect, onDelete }) => {
     onDelete(id);
   };
 
+  let cardClasses = 'repo-card';
+  if (repo.lastRelease && !repo.read) {
+    cardClasses += ' unread';
+  }
+
   return (
-    <div onClick={handleSelect} className="repo-card">
+    <div onClick={handleSelect} className={cardClasses}>
       <div style={{ flex: 1 }}>
         <span className="name">{name}</span>
         <br />
