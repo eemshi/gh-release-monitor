@@ -7,7 +7,6 @@ $darkgreen: #006a00;
 
 .repo-card {
   position: relative;
-  display: flex;
   margin-bottom: 15px;
   padding: 10px;
   border: 2px solid $blue;
@@ -16,9 +15,12 @@ $darkgreen: #006a00;
   &.focused {
     border-color: $green;
   }
-
-  &.disabled {
+  &.unreleased {
     border-color: $gray;
+  }
+
+  .thumbnail {
+    display: flex;
   }
 
   .name {
@@ -60,5 +62,13 @@ $darkgreen: #006a00;
     bottom: 7px;
     right: 7px;
     color: $darkgray;
+  }
+
+  .release-notes {
+    word-break: break-word;
+
+    .toggle-read {
+      text-align: right;
+    }
   }
 }

@@ -32,14 +32,6 @@ main {
       width: 396px;
     }
   }
-
-  .release-notes {
-    word-break: break-word;
-    @media screen and (min-width: 800px) {
-      flex: 1;
-      margin-left: 20px;
-    }
-  }
 }
 
 .sync-icon-container {

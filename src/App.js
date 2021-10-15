@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
 import RepoCard from './components/RepoCard/RepoCard';
 import RepoSearch from './components/RepoSearch/RepoSearch';
 import useLocalStorage from './hooks/useLocalStorage';
-import { octokit, getFormattedDate } from './utils';
+import { octokit } from './utils';
 import syncIcon from './icons/sync.svg';
 import './App.scss';
 
@@ -11,7 +10,6 @@ const App = () => {
   const [syncing, setSyncing] = useState(true);
   const [storedRepos, setStoredRepos] = useLocalStorage('repos', []);
   const [repos, setRepos] = useState([]);
-  const [focused, setFocused] = useState(null);
 
   useEffect(() => {
     const syncRepos = async () => {
@@ -19,7 +17,6 @@ const App = () => {
       setRepos(updatedRepos);
     };
     if (syncing) {
-      setFocused(null);
       syncRepos();
       setSyncing(false);
     }
@@ -42,15 +39,11 @@ const App = () => {
     const newList = repos.filter((r) => r.id !== id);
     setRepos(newList);
     setStoredRepos(newList);
-    if (id === focused?.id) {
-      setFocused(null);
-    }
   };
 
-  const toggleRead = () => {
-    const readUpdated = { ...focused, read: !focused.read };
+  const toggleRead = (repo) => {
+    const readUpdated = { ...repo, read: !repo.read };
     updateRepo(readUpdated);
-    setFocused(readUpdated);
   };
 
   return (
@@ -73,29 +66,11 @@ const App = () => {
             <RepoCard
               key={repo.id}
               repo={repo}
-              focused={focused?.id === repo.id}
-              onSelect={setFocused}
               onDelete={handleDeleteRepo}
+              toggleRead={toggleRead}
             />
           ))}
         </div>
-        {focused && (
-          <div className="release-notes">
-            <div role="button" onClick={toggleRead}>
-              {focused.read ? 'Mark unread' : 'Mark read'}
-            </div>
-            <div>
-              <a href={focused.url}>
-                {focused.owner}/{focused.name}
-              </a>{' '}
-              <a href={focused.lastRelease.html_url}>{focused.lastRelease.tag_name}</a>
-            </div>
-            <div>{getFormattedDate(focused.lastRelease.created_at)}</div>
-            <div>
-              <ReactMarkdown>{focused.lastRelease.body}</ReactMarkdown>
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );
