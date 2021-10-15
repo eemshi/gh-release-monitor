@@ -9,16 +9,20 @@ const ACCESS_TOKEN = process.env.REACT_APP_GITHUB_PAT;
 const headers = ACCESS_TOKEN && { authorization: `token ${ACCESS_TOKEN}` };
 
 const App = () => {
-  const [syncReleases, setSyncRelease] = useState(true);
+  const [syncing, setSyncing] = useState(true);
   const [storedRepos, setStoredRepos] = useLocalStorage('repos', []);
   const [repos, setRepos] = useState([]);
 
   useEffect(() => {
-    if (syncReleases && storedRepos?.length) {
-      updateReleases(storedRepos, setRepos);
+    const syncRepos = async () => {
+      const updatedRepos = await getNewReleases(storedRepos);
+      setRepos(updatedRepos);
+    };
+    if (syncing && storedRepos?.length) {
+      syncRepos();
     }
-    setSyncRelease(false);
-  }, [syncReleases, storedRepos]);
+    setSyncing(false);
+  }, [storedRepos, syncing]);
 
   const handleAddRepo = async ({ id, owner, name }) => {
     const deduped = repos.filter((r) => r.id !== id);
@@ -29,9 +33,27 @@ const App = () => {
     setStoredRepos(newList);
   };
 
+  const handleDeleteRepo = (id) => {
+    const newList = repos.filter((r) => r.id !== id);
+    setRepos(newList);
+    setStoredRepos(newList);
+  };
+
   return (
     <div className="App">
       <AddRepos searchRepos={searchRepos} handleAddRepo={handleAddRepo} />
+      <div>---</div>
+      <div>
+        {!!repos.length &&
+          repos.map((r) => (
+            <div key={r.id}>
+              <div>
+                {r.owner}/{r.name}
+              </div>
+              <div onClick={() => handleDeleteRepo(r.id)}>X</div>
+            </div>
+          ))}
+      </div>
     </div>
   );
 };
@@ -48,21 +70,18 @@ const getReleases = async (owner, repo) => {
   }
 };
 
-const updateReleases = (repos, handleUpdate) => {
-  const updatedList = [];
-  repos.forEach(async (r) => {
+const getNewReleases = (repos) => {
+  return repos.map((r) => {
     try {
-      const res = await getReleases(r.owner, r.name);
+      const res = getReleases(r.owner, r.name);
       if (res?.data?.length) {
-        updatedList.push({ ...r, lastRelease: res.data[0] });
-      } else {
-        updatedList.push(r);
+        return { ...r, lastRelease: res.data[0] };
       }
+      return r;
     } catch (e) {
-      console.log(e);
+      return r;
     }
   });
-  handleUpdate(updatedList);
 };
 
 const searchRepos = async (query, handleResults) => {
