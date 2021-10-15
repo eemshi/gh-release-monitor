@@ -1,4 +1,5 @@
 import React from 'react';
+import { getFormattedDate } from '../../utils';
 import './styles.scss';
 
 const RepoCard = ({ repo, onSelect, onDelete }) => {
@@ -22,15 +23,19 @@ const RepoCard = ({ repo, onSelect, onDelete }) => {
         <br />
         <small>{owner}</small>
       </div>
-      <div className="release">
+      <div className="release-info">
         {lastRelease ? (
-          <div>
-            <span className="tag">{lastRelease.tag_name}</span>
-            <br />
-            <small>{lastRelease.created_at}</small>
-          </div>
+          <>
+            <div className="tag-container">
+              <div className="tag">{lastRelease.tag_name}</div>
+              <div className="label">New!</div>
+            </div>
+            <div>
+              <small>{getFormattedDate(lastRelease.created_at)}</small>
+            </div>
+          </>
         ) : (
-          <small>No releases</small>
+          <small>No releases yet</small>
         )}
       </div>
       <div onClick={handleDelete} className="delete-btn">

@@ -17,7 +17,7 @@ function RepoSearch({ onSelect }) {
   useEffect(() => {
     const searchRepos = async (q) => {
       try {
-        const res = await octokit.request(`GET /search/repositories?q=${q}&per_page=5`);
+        const res = await octokit.request(`GET /search/repositories?q=${q}&per_page=10`);
         setResults(res.data.items);
       } catch (e) {
         console.log(e);

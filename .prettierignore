@@ -1,5 +1,8 @@
 # Ignore everything:
 /*
 
-# Except src & storybook:
-!/src
+# Except:
+!/src/
+/src/**/*.*
+!/src/**/*.js
+
