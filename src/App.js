@@ -90,17 +90,22 @@ const updateReleases = (repos) => {
   if (!repos?.length) {
     return [];
   }
-  return repos.map((r) => {
-    try {
-      const res = getReleases(r.owner, r.name);
-      if (res?.data?.length) {
-        const lastRelease = res.data[0];
-        const isNew = lastRelease.created_at !== r.lastRelease.created_at;
-        return { ...r, lastRelease, isNew };
+  return Promise.all(
+    repos.map(async (repo) => {
+      try {
+        const res = await getReleases(repo.owner, repo.name);
+        if (res?.data?.length) {
+          const lastRelease = res.data[0];
+          const isNew = lastRelease.published_at !== repo.lastRelease.published_at;
+          return { ...repo, lastRelease, isNew };
+        }
+        return repo;
+      } catch (e) {
+        // could handle with a cancellable promise,
+        // but not yet possible w/o a library
+        console.log(`Failed to update ${repo.name}; skipping`);
+        return { ...repo, error: true };
       }
-      return r;
-    } catch (e) {
-      return r;
-    }
-  });
+    })
+  );
 };
