@@ -1,9 +1,4 @@
-$gray: #ccc;
-$darkgray: #888;
-$blue: #8dcfd8;
-$lightgreen: #d9fee5;
-$green: #00c700;
-$darkgreen: #006a00;
+@import "../../utils/variables";
 
 .repo-card {
   position: relative;

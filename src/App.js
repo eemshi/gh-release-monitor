@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import RepoCard from './components/RepoCard/RepoCard';
 import RepoSearch from './components/RepoSearch/RepoSearch';
 import useLocalStorage from './hooks/useLocalStorage';
-import { getFormattedDate } from './utils';
-import { octokit } from './utils';
+import { octokit, getFormattedDate } from './utils/helpers';
 import syncIcon from './icons/sync.svg';
 import './App.scss';
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { getFormattedDate } from '../../utils';
+import { getFormattedDate } from '../../utils/helpers';
 import deleteIcon from '../../icons/delete.svg';
 import downCaretIcon from '../../icons/down-caret.svg';
 import './styles.scss';
@@ -48,7 +48,7 @@ const getContainerClasses = ({ lastRelease, read }) => {
 };
 
 const Header = ({ repo, focused, onToggleRead, onDelete }) => {
-  const { owner, name, lastRelease, isNew, read } = repo;
+  const { owner, name, lastRelease, isNew, read, error } = repo;
   return (
     <div className="header">
       <div style={{ flex: 1 }}>
@@ -64,7 +64,10 @@ const Header = ({ repo, focused, onToggleRead, onDelete }) => {
               {isNew && !read && <div className="label-new">New! </div>}
             </div>
             <div>
-              <small>{getFormattedDate(lastRelease.created_at)}</small>
+              <small>
+                {getFormattedDate(lastRelease.created_at)}{' '}
+                {error && <span className="error">(update failed)</span>}
+              </small>
             </div>
           </>
         ) : (

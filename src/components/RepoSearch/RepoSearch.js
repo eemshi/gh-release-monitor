@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import useDebounce from '../../hooks/useDebounce';
-import { octokit } from '../../utils';
+import { octokit } from '../../utils/helpers';
 import closeIcon from '../../icons/close.svg';
 import searchIcon from '../../icons/search.svg';
 import './styles.scss';
