@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import RepoCard from './components/RepoCard/RepoCard';
 import RepoSearch from './components/RepoSearch/RepoSearch';
 import useLocalStorage from './hooks/useLocalStorage';
+import { getFormattedDate } from './utils';
 import { octokit } from './utils';
 import syncIcon from './icons/sync.svg';
 import './App.scss';
@@ -10,11 +11,13 @@ const App = () => {
   const [syncing, setSyncing] = useState(true);
   const [storedRepos, setStoredRepos] = useLocalStorage('repos', []);
   const [repos, setRepos] = useState([]);
+  const [lastSynced, setLastSynced] = useState('');
 
   useEffect(() => {
     const syncRepos = async () => {
       const updatedRepos = await updateReleases(storedRepos);
       setRepos(updatedRepos);
+      setLastSynced(getFormattedDate(Date.now(), 'datetime'));
     };
     if (syncing) {
       syncRepos();
@@ -24,53 +27,61 @@ const App = () => {
 
   const updateRepo = (updatedRepo) => {
     const deduped = repos.filter((r) => r.id !== updatedRepo.id);
-    const newList = [...deduped, updatedRepo];
-    setRepos(newList);
-    setStoredRepos(newList);
+    const updatedRepos = [...deduped, updatedRepo];
+    setRepos(updatedRepos);
+    setStoredRepos(updatedRepos);
   };
 
   const handleSaveRepo = async ({ id, owner, name, html_url }) => {
     const releases = await getReleases(owner.login, name);
     const lastRelease = releases?.data?.length ? releases.data[0] : null;
-    updateRepo({ id, owner: owner.login, name, lastRelease, url: html_url });
+    updateRepo({
+      id,
+      owner: owner.login,
+      name,
+      lastRelease,
+      read: !lastRelease,
+      url: html_url,
+    });
   };
 
   const handleDeleteRepo = (id) => {
-    const newList = repos.filter((r) => r.id !== id);
-    setRepos(newList);
-    setStoredRepos(newList);
+    const updatedRepos = repos.filter((r) => r.id !== id);
+    setRepos(updatedRepos);
+    setStoredRepos(updatedRepos);
   };
 
   const toggleRead = (repo) => {
-    const readUpdated = { ...repo, read: !repo.read };
-    updateRepo(readUpdated);
+    const updatedRepos = { ...repo, read: !repo.read };
+    updateRepo(updatedRepos);
   };
 
   return (
     <div className="App">
       <header>
         <h1>GH Release Monitor</h1>
-        <div
-          role="button"
-          onClick={() => setSyncing(true)}
-          className="sync-icon-container"
-        >
-          <img src={syncIcon} width={20} alt="Sync" />
-        </div>
+        <RepoSearch repos={repos} onSelect={handleSaveRepo} />
       </header>
       <main>
-        <div className="repos-column">
-          <RepoSearch onSelect={handleSaveRepo} />
-          <h2>Tracking</h2>
-          {repos.map((repo) => (
-            <RepoCard
-              key={repo.id}
-              repo={repo}
-              onDelete={handleDeleteRepo}
-              toggleRead={toggleRead}
-            />
-          ))}
-        </div>
+        {!!repos.length && (
+          <div className="repos-header">
+            <div className="title">
+              <h2>Tracking</h2>
+              <div role="button" onClick={() => setSyncing(true)} className="sync-btn">
+                <img src={syncIcon} width={20} alt="Sync" />
+              </div>
+            </div>
+            <small>Last synced {lastSynced}</small>
+          </div>
+        )}
+        {repos.map((repo) => (
+          <RepoCard
+            key={repo.id}
+            repo={repo}
+            onDelete={handleDeleteRepo}
+            toggleRead={toggleRead}
+          />
+        ))}
       </main>
     </div>
   );

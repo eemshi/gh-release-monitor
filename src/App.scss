@@ -2,6 +2,9 @@ $blue: #8dcfd8;
 
 .App {
   padding: 1em;
+  @media screen and (min-width: 800px) {
+    width: 550px;
+  }
 }
 
 small {
@@ -13,28 +16,28 @@ div[role="button"] {
 }
 
 header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   
   h1 {
-    margin: 0;
+    margin-top: 5px;
+    margin-bottom: 10px;
   }
 }
 
-main {
-  @media screen and (min-width: 800px) {
-    display: flex;
-  }
+.repos-header {
+  margin-bottom: 20px;
 
-  .repos-column {
-    @media screen and (min-width: 800px) {
-      width: 550px;
+  .title {
+    display: flex;
+    align-items: center;
+
+    h2 {
+      margin: 0;
+    }
+
+    .sync-btn {
+      text-align: center;
+      margin-left: 10px;
     }
   }
-}
-
-.sync-icon-container {
-  text-align: center;
-  margin-left: 10px;
 }
