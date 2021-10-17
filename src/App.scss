@@ -7,12 +7,16 @@
   }
 }
 
-small {
-  font-size: 0.75em;
+a {
+  color: $purple;
 }
 
 div[role="button"] {
   cursor: pointer;
+}
+
+small {
+  font-size: 0.75em;
 }
 
 header {

@@ -66,6 +66,10 @@ const RepoSearch = ({ repos, onSelect }) => {
 export default RepoSearch;
 
 const Dropdown = ({ results, error, onSelect }) => {
+  if (!error && !results.length) {
+    return null;
+  }
+
   let content;
 
   if (error) {
