@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import RepoCard from './components/RepoCard/RepoCard';
 import RepoSearch from './components/RepoSearch/RepoSearch';
+import SyncButton from './components/SyncButton/SyncButton';
 import useLocalStorage from './hooks/useLocalStorage';
 import { octokit, getFormattedDate } from './utils/helpers';
-import syncIcon from './icons/sync.svg';
 import './App.scss';
 
 const App = () => {
@@ -20,8 +20,8 @@ const App = () => {
     };
     if (syncing) {
       syncRepos();
-      setSyncing(false);
     }
+    setSyncing(false);
   }, [storedRepos, syncing]);
 
   const updateRepo = (updatedRepo) => {
@@ -66,9 +66,7 @@ const App = () => {
           <div className="repos-header">
             <div className="title">
               <h2>Tracking</h2>
-              <div role="button" onClick={() => setSyncing(true)} className="sync-btn">
-                <img src={syncIcon} width={20} alt="Sync" />
-              </div>
+              <SyncButton syncing={syncing} onSync={() => setSyncing(true)} />
             </div>
             <small>Last synced {lastSynced}</small>
           </div>
