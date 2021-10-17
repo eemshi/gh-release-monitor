@@ -25,13 +25,12 @@ const RepoSearch = ({ repos, onSelect }) => {
         console.log(e);
       }
     };
-    if (debouncedQuery.length) {
+    if (debouncedQuery.trim().length) {
       searchRepos(debouncedQuery);
     }
   }, [debouncedQuery]);
 
   const handleSelect = (repo) => {
-    console.log(repo);
     onSelect(repo);
     setQuery('');
   };
