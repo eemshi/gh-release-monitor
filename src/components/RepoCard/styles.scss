@@ -7,20 +7,44 @@ $darkgreen: #006a00;
 
 .repo-card {
   position: relative;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   padding: 10px;
-  border: 2px solid $blue;
+  padding-left: 15px;
+  border: 3px solid $blue;
   border-radius: 7px;
+  cursor: pointer;
 
-  &.focused {
+  &.unread {
     border-color: $green;
   }
   &.unreleased {
     border-color: $gray;
   }
 
-  .thumbnail {
+  .delete-btn {
+    align-self: flex-start;
+    margin-left: 7px;
+  }
+
+  .header {
     display: flex;
+    align-items: center;
+    position: relative;
+    min-height: 60px;
+  }
+
+  .read-action {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    color: $darkgray;
+    line-height: 1;
+
+    .read-toggle {
+      border: 1px solid $darkgray;
+      border-radius: 100px;
+      padding: 4px 8px;
+    }
   }
 
   .name {
@@ -30,8 +54,17 @@ $darkgreen: #006a00;
 
   .release-info {
     flex: 1;
-    align-self: center;
     padding-left: 15px;
+    
+    .label-new {
+      margin-left: 7px;
+      padding: 3px 4px;
+      border-radius: 5px;
+      background-color: $lightgreen;
+      color: $darkgreen;
+      font-size: 0.7em;
+      line-height: 1;
+    }
 
     .tag-container {
       display: flex;
@@ -41,34 +74,10 @@ $darkgreen: #006a00;
     .tag {
       font-size: 1.15em;
     }
-
-    .label {
-      margin-left: 7px;
-      padding: 2px 4px;
-      border-radius: 5px;
-      background-color: $lightgreen;
-      color: $darkgreen;
-      font-size: 0.7em;
-    }
-  }
-
-  .delete-btn {
-    align-self: flex-start;
-    margin-left: 7px;
-  }
-
-  .unread {
-    position: absolute;
-    bottom: 7px;
-    right: 7px;
-    color: $darkgray;
   }
 
   .release-notes {
+    margin-top: 15px;
     word-break: break-word;
-
-    .toggle-read {
-      text-align: right;
-    }
   }
 }

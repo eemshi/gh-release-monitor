@@ -5,7 +5,7 @@ import closeIcon from '../../icons/close.svg';
 import searchIcon from '../../icons/search.svg';
 import './styles.scss';
 
-function RepoSearch({ onSelect }) {
+const RepoSearch = ({ repos, onSelect }) => {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 300);
   const [results, setResults] = useState([]);
@@ -43,7 +43,7 @@ function RepoSearch({ onSelect }) {
         <input
           type="text"
           name="repo"
-          placeholder="Add repo"
+          placeholder={!repos.length ? 'Add a repo to get started' : 'Add another repo'}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -57,14 +57,14 @@ function RepoSearch({ onSelect }) {
       {!!results.length && (
         <div className="dropdown-container">
           <div className="dropdown">
-            {results.map((r) => (
+            {results.map((result) => (
               <div
-                key={r.id}
+                key={result.id}
                 role="button"
-                onClick={() => handleSelect(r)}
+                onClick={() => handleSelect(result)}
                 className="item"
               >
-                {r.owner.login}/{r.name}
+                {result.owner.login}/{result.name}
               </div>
             ))}
           </div>
@@ -72,6 +72,6 @@ function RepoSearch({ onSelect }) {
       )}
     </div>
   );
-}
+};
 
 export default RepoSearch;

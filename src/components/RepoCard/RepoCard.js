@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { getFormattedDate } from '../../utils';
-import closeIcon from '../../icons/close.svg';
 import deleteIcon from '../../icons/delete.svg';
+import downCaretIcon from '../../icons/down-caret.svg';
 import './styles.scss';
 
 const RepoCard = ({ repo, onDelete, toggleRead }) => {
@@ -21,87 +21,98 @@ const RepoCard = ({ repo, onDelete, toggleRead }) => {
     }
   };
 
-  let cardClasses = 'repo-card';
-  if (!repo.lastRelease) {
-    cardClasses += ' unreleased';
-  }
-
   return (
-    <div role="button" onClick={() => setFocused(!focused)} className={cardClasses}>
-      {focused ? (
-        <Expanded repo={repo} onToggleRead={handleToggleRead} />
-      ) : (
-        <Collapsed repo={repo} handleDelete={handleDelete} />
-      )}
+    <div onClick={() => setFocused(!focused)} className={getContainerClasses(repo)}>
+      <Header
+        repo={repo}
+        focused={focused}
+        onToggleRead={handleToggleRead}
+        onDelete={handleDelete}
+      />
+      {focused && <ReleaseNotes repo={repo} />}
     </div>
   );
 };
 
 export default RepoCard;
 
-const Collapsed = ({ repo, handleDelete }) => {
+const getContainerClasses = ({ lastRelease, read }) => {
+  let classes = 'repo-card';
+  if (!lastRelease) {
+    classes += ' unreleased';
+  }
+  if (!read) {
+    classes += ' unread';
+  }
+  return classes;
+};
+
+const Header = ({ repo, focused, onToggleRead, onDelete }) => {
   const { owner, name, lastRelease, isNew, read } = repo;
   return (
-    <>
-      <div className="thumbnail">
-        <div style={{ flex: 1 }}>
-          <span className="name">{name}</span>
-          <br />
-          <small>{owner}</small>
-        </div>
-        <div className="release-info">
-          {lastRelease ? (
-            <>
-              <div className="tag-container">
-                <div className="tag">{lastRelease.tag_name}</div>
-                {isNew && !read && <div className="label">New!</div>}
-              </div>
-              <div>
-                <small>{getFormattedDate(lastRelease.created_at)}</small>
-              </div>
-            </>
-          ) : (
-            <small>No releases yet</small>
-          )}
-        </div>
-        <div role="button" onClick={handleDelete} className="delete-btn">
-          <img src={deleteIcon} width={20} alt="Delete" />
-        </div>
-        {lastRelease && read && <small className="unread">Read ✓</small>}
+    <div className="header">
+      <div style={{ flex: 1 }}>
+        <span className="name">{name}</span>
+        <br />
+        <small>{owner}</small>
       </div>
-    </>
+      <div className="release-info">
+        {lastRelease ? (
+          <>
+            <div className="tag-container">
+              <div className="tag">{lastRelease.tag_name}</div>
+              {isNew && !read && <div className="label-new">New! </div>}
+            </div>
+            <div>
+              <small>{getFormattedDate(lastRelease.created_at)}</small>
+            </div>
+          </>
+        ) : (
+          <small>No releases yet</small>
+        )}
+      </div>
+      <div role="button" onClick={onDelete} className="delete-btn">
+        <img src={deleteIcon} width={20} alt="Delete" />
+      </div>
+      <small className="read-action">
+        <ReadAction repo={repo} focused={focused} onToggleRead={onToggleRead} />
+      </small>
+    </div>
   );
 };
 
-const Expanded = ({ repo, onToggleRead }) => {
-  let content;
-  if (!repo.lastRelease) {
-    content = 'No releases';
-  } else {
-    content = (
-      <>
-        <a href={repo.lastRelease.html_url} onClick={(e) => e.stopPropagation()}>
-          {repo.lastRelease.tag_name}
-        </a>
-        <div>{getFormattedDate(repo.lastRelease.created_at)}</div>
-        <div>
-          <ReactMarkdown>{repo.lastRelease.body}</ReactMarkdown>
-        </div>
-      </>
-    );
-  }
-
-  return (
-    <div className="release-notes">
-      <div className="toggle-read" role="button" onClick={(e) => onToggleRead(e, repo)}>
+const ReadAction = ({ repo, focused, onToggleRead }) => {
+  if (focused) {
+    return (
+      <div className="read-toggle" role="button" onClick={(e) => onToggleRead(e, repo)}>
         {repo.read ? 'Mark unread' : 'Mark read'}
       </div>
-      <div>
-        <a href={repo.url} onClick={(e) => e.stopPropagation()} className="name">
-          {repo.owner}/{repo.name}
+    );
+  } else if (repo.lastRelease && repo.read) {
+    return 'Read ✓';
+  }
+  return <img src={downCaretIcon} width={20} />;
+};
+
+const ReleaseNotes = ({ repo }) => {
+  let content;
+  if (repo.lastRelease?.body) {
+    content = <ReactMarkdown>{repo.lastRelease.body}</ReactMarkdown>;
+  } else if (repo.lastRelease) {
+    content = (
+      <>
+        No release notes.{' '}
+        <a href={repo.lastRelease.html_url} onClick={(e) => e.stopPropagation()}>
+          View release
         </a>
-      </div>
-      {content}
-    </div>
-  );
+      </>
+    );
+  } else {
+    content = (
+      <a href={repo.url} onClick={(e) => e.stopPropagation()}>
+        View repo
+      </a>
+    );
+  }
+  return <div className="release-notes">{content}</div>;
 };
