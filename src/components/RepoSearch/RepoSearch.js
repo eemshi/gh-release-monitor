@@ -9,10 +9,12 @@ const RepoSearch = ({ repos, onSelect }) => {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 300);
   const [results, setResults] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!query.length) {
       setResults([]);
+      setError(null);
     }
   }, [query]);
 
@@ -21,12 +23,16 @@ const RepoSearch = ({ repos, onSelect }) => {
       try {
         const res = await octokit.request(`GET /search/repositories?q=${q}&per_page=10`);
         setResults(res.data.items);
+        setError(null);
       } catch (e) {
-        console.log(e);
+        setResults([]);
+        setError('Sorry, something went wrong');
       }
     };
     if (debouncedQuery.trim().length) {
       searchRepos(debouncedQuery);
+    } else {
+      setResults([]);
     }
   }, [debouncedQuery]);
 
@@ -52,25 +58,37 @@ const RepoSearch = ({ repos, onSelect }) => {
           </div>
         )}
       </div>
-
-      {!!results.length && (
-        <div className="dropdown-container">
-          <div className="dropdown">
-            {results.map((result) => (
-              <div
-                key={result.id}
-                role="button"
-                onClick={() => handleSelect(result)}
-                className="item"
-              >
-                {result.owner.login}/{result.name}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <Dropdown results={results} error={error} onSelect={handleSelect} />
     </div>
   );
 };
 
 export default RepoSearch;
+
+const Dropdown = ({ results, error, onSelect }) => {
+  let content;
+
+  if (error) {
+    content = <div className="error">{error}</div>;
+  } else if (results.length) {
+    content = (
+      <>
+        {results.map((result) => (
+          <div
+            key={result.id}
+            role="button"
+            onClick={() => onSelect(result)}
+            className="item"
+          >
+            {result.owner.login}/{result.name}
+          </div>
+        ))}
+      </>
+    );
+  }
+  return (
+    <div className="dropdown-container">
+      <div className="dropdown">{content}</div>
+    </div>
+  );
+};

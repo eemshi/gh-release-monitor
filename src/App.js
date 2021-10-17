@@ -84,11 +84,7 @@ const App = () => {
 export default App;
 
 const getReleases = async (owner, repo) => {
-  try {
-    return await octokit.request(`GET /repos/${owner}/${repo}/releases?per_page=1`);
-  } catch (e) {
-    console.log(e);
-  }
+  return await octokit.request(`GET /repos/${owner}/${repo}/releases?per_page=1`);
 };
 
 const updateReleases = (repos) => {
