@@ -57,22 +57,19 @@ const Header = ({ repo, focused, onToggleRead, onDelete }) => {
         <small>{owner}</small>
       </div>
       <div className="release-info">
-        {lastRelease ? (
+        {lastRelease && (
           <>
             <div className="tag-container">
               <div className="tag">{lastRelease.tag_name}</div>
               {isNew && !read && <div className="label-new">New! </div>}
             </div>
-            <div>
-              <small>
-                {getFormattedDate(lastRelease.created_at)}{' '}
-                {error && <span className="error">(update failed)</span>}
-              </small>
-            </div>
+            <small>
+              {getFormattedDate(lastRelease.published_at)}{' '}
+              {error && <span className="error">(update failed)</span>}
+            </small>
           </>
-        ) : (
-          <small>No releases yet</small>
         )}
+        {!lastRelease && <small>No releases yet</small>}
       </div>
       <div role="button" onClick={onDelete} className="delete-btn">
         <img src={deleteIcon} width={20} alt="Delete" />
@@ -85,37 +82,42 @@ const Header = ({ repo, focused, onToggleRead, onDelete }) => {
 };
 
 const ReadAction = ({ repo, focused, onToggleRead }) => {
+  if (!repo.lastRelease) {
+    return null;
+  }
   if (focused) {
     return (
       <div className="read-toggle" role="button" onClick={(e) => onToggleRead(e, repo)}>
         {repo.read ? 'Mark unread' : 'Mark read'}
       </div>
     );
-  } else if (repo.lastRelease && repo.read) {
-    return 'Read ✓';
+  }
+  if (repo.read) {
+    return '✓ Read';
   }
   return <img src={downCaretIcon} width={20} />;
 };
 
 const ReleaseNotes = ({ repo }) => {
-  let content;
-  if (repo.lastRelease?.body) {
-    content = <ReactMarkdown>{repo.lastRelease.body}</ReactMarkdown>;
-  } else if (repo.lastRelease) {
-    content = (
-      <>
-        No release notes.{' '}
-        <a href={repo.lastRelease.html_url} onClick={(e) => e.stopPropagation()}>
-          View release
+  if (!repo.lastRelease) {
+    return (
+      <div className="release-notes">
+        <a href={repo.url} onClick={(e) => e.stopPropagation()}>
+          Go to repo
         </a>
-      </>
-    );
-  } else {
-    content = (
-      <a href={repo.url} onClick={(e) => e.stopPropagation()}>
-        View repo
-      </a>
+      </div>
     );
   }
-  return <div className="release-notes">{content}</div>;
+  return (
+    <div className="release-notes">
+      {repo.lastRelease?.body ? (
+        <ReactMarkdown>{repo.lastRelease.body}</ReactMarkdown>
+      ) : (
+        'No release notes. '
+      )}
+      <a href={repo.lastRelease.html_url} onClick={(e) => e.stopPropagation()}>
+        View release
+      </a>
+    </div>
+  );
 };

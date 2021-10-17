@@ -8,33 +8,31 @@ import './App.scss';
 
 const App = () => {
   const [syncing, setSyncing] = useState(true);
-  const [storedRepos, setStoredRepos] = useLocalStorage('repos', []);
-  const [repos, setRepos] = useState([]);
+  const [repos, setRepos] = useLocalStorage('repos', []);
   const [lastSynced, setLastSynced] = useState('');
 
   useEffect(() => {
     const syncRepos = async () => {
-      const updatedRepos = await updateReleases(storedRepos);
-      setRepos(updatedRepos);
-      setLastSynced(getFormattedDate(Date.now(), 'datetime'));
+      const updated = await updateReleases(repos);
+      const date = getFormattedDate(Date.now(), 'datetime');
+      setRepos(sortRepos(updated));
+      setLastSynced(date);
     };
-    if (syncing) {
+    if (repos && syncing) {
       syncRepos();
     }
     setSyncing(false);
-  }, [storedRepos, syncing]);
+  }, [repos, setRepos, syncing]);
 
-  const updateRepo = (updatedRepo) => {
+  const addEditRepo = (updatedRepo) => {
     const deduped = repos.filter((r) => r.id !== updatedRepo.id);
-    const updatedRepos = [...deduped, updatedRepo];
-    setRepos(updatedRepos);
-    setStoredRepos(updatedRepos);
+    setRepos(sortRepos([...deduped, updatedRepo]));
   };
 
   const handleSaveRepo = async ({ id, owner, name, html_url }) => {
     const releases = await getReleases(owner.login, name);
     const lastRelease = releases?.data?.length ? releases.data[0] : null;
-    updateRepo({
+    addEditRepo({
       id,
       owner: owner.login,
       name,
@@ -45,14 +43,13 @@ const App = () => {
   };
 
   const handleDeleteRepo = (id) => {
-    const updatedRepos = repos.filter((r) => r.id !== id);
-    setRepos(updatedRepos);
-    setStoredRepos(updatedRepos);
+    const updatedList = repos.filter((r) => r.id !== id);
+    setRepos(updatedList);
   };
 
   const toggleRead = (repo) => {
-    const updatedRepos = { ...repo, read: !repo.read };
-    updateRepo(updatedRepos);
+    const updatedRepo = { ...repo, read: !repo.read };
+    addEditRepo(updatedRepo);
   };
 
   return (
@@ -104,10 +101,10 @@ const updateReleases = (repos) => {
         const res = await getReleases(repo.owner, repo.name);
         if (res?.data?.length) {
           const lastRelease = res.data[0];
-          const isNew = lastRelease.published_at !== repo.lastRelease.published_at;
+          const isNew = lastRelease.published_at !== repo.lastRelease?.published_at;
           return { ...repo, lastRelease, isNew };
         }
-        return repo;
+        return { ...repo, lastRelease: null, isNew: false };
       } catch (e) {
         // could handle with a cancellable promise,
         // but not yet possible w/o a library
@@ -116,4 +113,17 @@ const updateReleases = (repos) => {
       }
     })
   );
+};
+
+const sortByRead = (a, b) => {
+  if (a.read === b.read) {
+    const dateA = a.lastRelease?.published_at || '';
+    const dateB = b.lastRelease?.published_at || '';
+    return dateA > dateB ? -1 : 1;
+  }
+  return a.read ? 1 : -1;
+};
+
+const sortRepos = (repos) => {
+  return repos.sort(sortByRead);
 };
