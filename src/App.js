@@ -62,7 +62,7 @@ const App = () => {
         {!!repos.length && (
           <div className="repos-header">
             <div className="title">
-              <h2>Tracking</h2>
+              <h2>Latest Releases</h2>
               <SyncButton syncing={syncing} onSync={() => setSyncing(true)} />
             </div>
             <small>Last synced {lastSynced}</small>
