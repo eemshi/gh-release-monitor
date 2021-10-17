@@ -6,7 +6,7 @@ import downArrow from '../../icons/down-arrow.svg';
 import upArrow from '../../icons/up-arrow.svg';
 import './styles.scss';
 
-const RepoCard = ({ repo, onDelete, toggleRead }) => {
+const RepoCard = ({ repo, onDelete, onToggleRead }) => {
   const [focused, setFocused] = useState(false);
 
   const handleDelete = (e) => {
@@ -14,17 +14,25 @@ const RepoCard = ({ repo, onDelete, toggleRead }) => {
     onDelete(repo.id);
   };
 
-  const handleToggleRead = (e, repo) => {
-    e.stopPropagation();
-    toggleRead(repo);
+  const handleToggleRead = () => {
+    onToggleRead(repo);
     if (focused) {
       setFocused(false);
     }
   };
 
+  const handleToggleFocus = () => {
+    setFocused(!focused);
+  };
+
   return (
-    <div onClick={() => setFocused(!focused)} className={getContainerClasses(repo)}>
-      <Header repo={repo} focused={focused} onDelete={handleDelete} />
+    <div className={getContainerClasses(repo)}>
+      <Header
+        repo={repo}
+        focused={focused}
+        onFocus={handleToggleFocus}
+        onDelete={handleDelete}
+      />
       {focused && <ReleaseNotes repo={repo} onToggleRead={handleToggleRead} />}
     </div>
   );
@@ -43,10 +51,10 @@ const getContainerClasses = ({ lastRelease, read }) => {
   return classes;
 };
 
-const Header = ({ repo, focused, onDelete }) => {
+const Header = ({ repo, focused, onFocus, onDelete }) => {
   const { owner, name, lastRelease, isNew, read, error } = repo;
   return (
-    <div className="header">
+    <div className="header" onClick={onFocus}>
       <div style={{ flex: 1 }}>
         <span className="name">{name}</span>
         <br />
@@ -94,9 +102,7 @@ const ReleaseNotes = ({ repo, onToggleRead }) => {
   if (!repo.lastRelease) {
     return (
       <div className="release-notes">
-        <a href={repo.url} onClick={(e) => e.stopPropagation()}>
-          Go to repo
-        </a>
+        <a href={repo.url}>Go to repo</a>
       </div>
     );
   }
@@ -116,9 +122,7 @@ const ReleaseNotes = ({ repo, onToggleRead }) => {
       ) : (
         'No release notes. '
       )}
-      <a href={repo.lastRelease.html_url} onClick={(e) => e.stopPropagation()}>
-        View release
-      </a>
+      <a href={repo.lastRelease.html_url}>View release</a>
     </div>
   );
 };

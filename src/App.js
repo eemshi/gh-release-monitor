@@ -47,7 +47,7 @@ const App = () => {
     setRepos(updatedList);
   };
 
-  const toggleRead = (repo) => {
+  const handleToggleRead = (repo) => {
     const updatedRepo = { ...repo, read: !repo.read };
     addEditRepo(updatedRepo);
   };
@@ -73,7 +73,7 @@ const App = () => {
             key={repo.id}
             repo={repo}
             onDelete={handleDeleteRepo}
-            toggleRead={toggleRead}
+            onToggleRead={handleToggleRead}
           />
         ))}
       </main>
