@@ -11,7 +11,7 @@
   }
   
   .dropdown {
-    border: 1px solid $gray;
+    border: 1px solid $darkgray;
     border-top: 0;
     background-color: white;
     padding: 6px 0;
@@ -19,7 +19,7 @@
     .item {
       padding: 12px;
     }
-    
+
     .error {
       padding: 12px;
     }
@@ -29,7 +29,7 @@
     display: flex;
     align-items: center;
     border: 0;
-    border-bottom: 1px solid $gray;
+    border-bottom: 1px solid $darkgray;
 
     input {
       flex: 1;

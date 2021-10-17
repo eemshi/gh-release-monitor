@@ -24,7 +24,7 @@
     display: flex;
     align-items: center;
     position: relative;
-    min-height: 60px;
+    min-height: 50px;
   }
 
   .name {
@@ -32,17 +32,22 @@
     font-size: 1.25em;
   }
 
-  .read-action {
+  .read-indicator {
     position: absolute;
     bottom: 0;
     right: 0;
-    color: $darkgray;
+    line-height: 1;
+  }
+
+  .read-toggle-container {
+    text-align: right;
     line-height: 1;
 
     .read-toggle {
-      border: 1px solid $darkgray;
+      border: 1px solid black;
       border-radius: 100px;
-      padding: 4px 8px;
+      padding: 3px 7px;
+      font-size: 0.7em;
     }
   }
 
@@ -71,7 +76,9 @@
   }
 
   .release-notes {
-    margin: 15px 0 10px 0;
+    margin: 10px 0;
+    padding-top: 12px;
+    border-top: 1px solid $darkgray;
     word-break: break-word;
   }
 }

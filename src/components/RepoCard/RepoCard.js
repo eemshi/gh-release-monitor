@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { getFormattedDate } from '../../utils/helpers';
 import deleteIcon from '../../icons/delete.svg';
-import downCaretIcon from '../../icons/down-caret.svg';
+import downArrow from '../../icons/down-arrow.svg';
+import upArrow from '../../icons/up-arrow.svg';
 import './styles.scss';
 
 const RepoCard = ({ repo, onDelete, toggleRead }) => {
@@ -23,13 +24,8 @@ const RepoCard = ({ repo, onDelete, toggleRead }) => {
 
   return (
     <div onClick={() => setFocused(!focused)} className={getContainerClasses(repo)}>
-      <Header
-        repo={repo}
-        focused={focused}
-        onToggleRead={handleToggleRead}
-        onDelete={handleDelete}
-      />
-      {focused && <ReleaseNotes repo={repo} />}
+      <Header repo={repo} focused={focused} onDelete={handleDelete} />
+      {focused && <ReleaseNotes repo={repo} onToggleRead={handleToggleRead} />}
     </div>
   );
 };
@@ -47,7 +43,7 @@ const getContainerClasses = ({ lastRelease, read }) => {
   return classes;
 };
 
-const Header = ({ repo, focused, onToggleRead, onDelete }) => {
+const Header = ({ repo, focused, onDelete }) => {
   const { owner, name, lastRelease, isNew, read, error } = repo;
   return (
     <div className="header">
@@ -57,7 +53,7 @@ const Header = ({ repo, focused, onToggleRead, onDelete }) => {
         <small>{owner}</small>
       </div>
       <div className="release-info">
-        {lastRelease && (
+        {lastRelease ? (
           <>
             <div className="tag-container">
               <div className="tag">{lastRelease.tag_name}</div>
@@ -68,37 +64,33 @@ const Header = ({ repo, focused, onToggleRead, onDelete }) => {
               {error && <span className="error">(update failed)</span>}
             </small>
           </>
+        ) : (
+          <small>No releases yet</small>
         )}
-        {!lastRelease && <small>No releases yet</small>}
       </div>
       <div role="button" onClick={onDelete} className="delete-btn">
         <img src={deleteIcon} width={20} alt="Delete" />
       </div>
-      <small className="read-action">
-        <ReadAction repo={repo} focused={focused} onToggleRead={onToggleRead} />
-      </small>
+      {lastRelease && (
+        <div className="read-indicator">
+          <ReadIndicator repo={repo} focused={focused} />
+        </div>
+      )}
     </div>
   );
 };
 
-const ReadAction = ({ repo, focused, onToggleRead }) => {
-  if (!repo.lastRelease) {
-    return null;
-  }
+const ReadIndicator = ({ repo, focused }) => {
   if (focused) {
-    return (
-      <div className="read-toggle" role="button" onClick={(e) => onToggleRead(e, repo)}>
-        {repo.read ? 'Mark unread' : 'Mark read'}
-      </div>
-    );
+    return <img src={upArrow} width={20} />;
   }
   if (repo.read) {
-    return '✓ Read';
+    return <small>✓ Read</small>;
   }
-  return <img src={downCaretIcon} width={20} />;
+  return <img src={downArrow} width={20} />;
 };
 
-const ReleaseNotes = ({ repo }) => {
+const ReleaseNotes = ({ repo, onToggleRead }) => {
   if (!repo.lastRelease) {
     return (
       <div className="release-notes">
@@ -110,6 +102,15 @@ const ReleaseNotes = ({ repo }) => {
   }
   return (
     <div className="release-notes">
+      <div className="read-toggle-container">
+        <span
+          role="button"
+          onClick={(e) => onToggleRead(e, repo)}
+          className="read-toggle"
+        >
+          {repo.read ? 'Mark unread' : 'Mark as read'}
+        </span>
+      </div>
       {repo.lastRelease?.body ? (
         <ReactMarkdown>{repo.lastRelease.body}</ReactMarkdown>
       ) : (
