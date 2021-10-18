@@ -3,7 +3,7 @@ import RepoCard from './components/RepoCard/RepoCard';
 import RepoSearch from './components/RepoSearch/RepoSearch';
 import SyncButton from './components/SyncButton/SyncButton';
 import useLocalStorage from './hooks/useLocalStorage';
-import { octokit, getFormattedDate } from './utils/helpers';
+import { octokit, sortRepos, getFormattedDate } from './utils/helpers';
 import './App.scss';
 
 const App = () => {
@@ -13,10 +13,10 @@ const App = () => {
 
   useEffect(() => {
     const syncRepos = async () => {
-      const updated = await updateReleases(repos);
-      const date = getFormattedDate(Date.now(), 'datetime');
-      setRepos(sortRepos(updated));
-      setLastSynced(date);
+      const updatedRepos = await updateReleases(repos);
+      const timestamp = getFormattedDate(Date.now(), 'datetime');
+      setRepos(sortRepos(updatedRepos));
+      setLastSynced(timestamp);
     };
     if (repos && syncing) {
       syncRepos();
@@ -31,6 +31,7 @@ const App = () => {
 
   const handleSaveRepo = async ({ id, owner, name, html_url }) => {
     const releases = await getReleases(owner.login, name);
+    // TODO: if no official release, use last commit
     const lastRelease = releases?.data?.length ? releases.data[0] : null;
     addEditRepo({
       id,
@@ -102,24 +103,11 @@ const updateReleases = (repos) => {
         }
         return { ...repo, lastRelease: null, isNew: false };
       } catch (e) {
-        // could handle with a cancellable promise,
-        // but not possible yet w/o a library
-        console.log(`Failed to update ${repo.name}; using cached version`);
+        console.log(`Failed to update ${repo.name}; using cached version instead`);
         return { ...repo, error: true };
+        // maybe better to use a cancellable promise for this,
+        // but need a library since js can't do this yet
       }
     })
   );
-};
-
-const sortByRead = (a, b) => {
-  if (a.read === b.read) {
-    const dateA = a.lastRelease?.published_at || '';
-    const dateB = b.lastRelease?.published_at || '';
-    return dateA > dateB ? -1 : 1;
-  }
-  return a.read ? 1 : -1;
-};
-
-const sortRepos = (repos) => {
-  return repos.sort(sortByRead);
 };

@@ -6,6 +6,19 @@ export const octokit = new Octokit({
   auth: ACCESS_TOKEN ? `token ${ACCESS_TOKEN}` : '',
 });
 
+const sortByRead = (a, b) => {
+  if (a.read === b.read) {
+    const dateA = a.lastRelease?.published_at || '';
+    const dateB = b.lastRelease?.published_at || '';
+    return dateA > dateB ? -1 : 1;
+  }
+  return a.read ? 1 : -1;
+};
+
+export const sortRepos = (repos) => {
+  return repos.sort(sortByRead);
+};
+
 const monthNames = [
   'Jan',
   'Feb',
