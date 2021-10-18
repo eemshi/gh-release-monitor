@@ -2,7 +2,7 @@
 
 A tool to keep track of releases made by GitHub repos.
 
-Features
+### Features
 - Save repos to local storage
 - Check for new releases on page load, and any time via sync button
 - Mark releases read/unread
@@ -10,7 +10,12 @@ Features
 - Sort order is Unread -> Read -> No releases, and by date within each of those
 - Responsive, mobile first
 
-Future exploration
+You can optionally set your Github Personal Access Token in a `.env` file (git ignored) at the root. This is not required to run the app, but prevents rate limiting.
+```
+REACT_APP_GITHUB_PAT=your_access_token
+```
+
+### Future exploration
 - Should we use hash maps instead of arrays for repo data manipulation?
 - Maybe we should use an actual dropdown element for the search bar typeahead, for accessibility
 
