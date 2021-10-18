@@ -1,6 +1,18 @@
 # GitHub Release Monitor
 
-A tool to keep track of releases made by GitHub repos.   This repository contains an example setup that can be used to create an app.
+A tool to keep track of releases made by GitHub repos.
+
+Features
+- Save repos to local storage
+- Check for new releases on page load, and any time via sync button
+- Mark releases read/unread
+- Label for new, unseen releases
+- Sort order is Unread -> Read -> No releases, and by date within each of those
+- Responsive, mobile first
+
+Future exploration
+- Should we use hash maps instead of arrays for repo data manipulation?
+- Maybe we should use an actual dropdown element for the search bar typeahead, for accessibility
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
