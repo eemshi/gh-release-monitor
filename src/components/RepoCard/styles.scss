@@ -5,7 +5,7 @@
   margin-bottom: 20px;
   padding: 10px;
   padding-left: 15px;
-  border: 3px solid $blue;
+  border: 2px solid $lightblue;
   border-radius: 7px;
   &.unread {
     border-color: $green;
@@ -30,6 +30,7 @@
   .name {
     margin-bottom: 5px;
     font-size: 1.25em;
+    font-weight: bold;
   }
 
   .read-indicator {
@@ -44,10 +45,10 @@
     line-height: 1;
 
     .read-toggle {
-      border: 1px solid black;
+      border: 1px solid $black;
       border-radius: 100px;
       padding: 3px 7px;
-      font-size: 0.7em;
+      font-size: 0.75em;
     }
   }
 
@@ -72,6 +73,7 @@
 
     .tag {
       font-size: 1.15em;
+      font-weight: bold;
     }
   }
 

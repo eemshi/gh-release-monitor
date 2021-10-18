@@ -90,12 +90,12 @@ const Header = ({ repo, focused, onFocus, onDelete }) => {
 
 const ReadIndicator = ({ repo, focused }) => {
   if (focused) {
-    return <img src={upArrow} width={20} />;
+    return <img src={upArrow} width={20} alt="Collapse" />;
   }
   if (repo.read) {
     return <small>✓ Read</small>;
   }
-  return <img src={downArrow} width={20} />;
+  return <img src={downArrow} width={20} alt="Expand" />;
 };
 
 const ReleaseNotes = ({ repo, onToggleRead }) => {

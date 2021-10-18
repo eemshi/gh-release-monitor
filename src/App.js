@@ -65,7 +65,7 @@ const App = () => {
               <h2>Latest Releases</h2>
               <SyncButton syncing={syncing} onSync={() => setSyncing(true)} />
             </div>
-            <small>Last synced {lastSynced}</small>
+            <small>Updated {lastSynced}</small>
           </div>
         )}
         {repos.map((repo) => (
@@ -103,8 +103,8 @@ const updateReleases = (repos) => {
         return { ...repo, lastRelease: null, isNew: false };
       } catch (e) {
         // could handle with a cancellable promise,
-        // but not yet possible w/o a library
-        console.log(`Failed to update ${repo.name}; skipping`);
+        // but not possible yet w/o a library
+        console.log(`Failed to update ${repo.name}; using cached version`);
         return { ...repo, error: true };
       }
     })

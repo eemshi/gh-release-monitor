@@ -1,9 +1,14 @@
 @import "./utils/variables";
+@import url('https://fonts.googleapis.com/css2?family=Quattrocento+Sans:ital,wght@0,400;0,700;1,400&display=swap');
+
 
 .App {
   padding: 1em;
+  font-family: 'Quattrocento Sans', sans-serif;
+  color: $black;
+
   @media screen and (min-width: 450px) {
-    width: 500px;
+    max-width: 550px;
   }
 }
 
@@ -15,8 +20,12 @@ a {
   cursor: pointer;
 }
 
+input {
+  font-family: 'Quattrocento Sans', sans-serif;
+}
+
 small {
-  font-size: 0.75em;
+  font-size: 0.85em;
 }
 
 header {

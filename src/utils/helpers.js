@@ -34,7 +34,7 @@ export const getFormattedDate = (string, type = 'date') => {
       minutes: date.getMinutes(),
     };
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-    return `${month} ${day}, ${year} ${hours}:${formattedMinutes}`;
+    return `${month} ${day}, ${year} at ${hours}:${formattedMinutes}`;
   }
   return `${month} ${day}, ${year}`;
 };

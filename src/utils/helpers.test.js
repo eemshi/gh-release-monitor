@@ -10,6 +10,6 @@ describe('getFormattedDate', () => {
 
   test('formats date and time', () => {
     const type = 'datetime';
-    expect(getFormattedDate(string, type)).toEqual('May 7, 2021 3:56');
+    expect(getFormattedDate(string, type)).toEqual('May 7, 2021 at 3:56');
   });
 });
